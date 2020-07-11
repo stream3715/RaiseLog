@@ -51,6 +51,7 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+.DS_Store
 
 # Windows Installer files
 *.cab

@@ -165,7 +165,7 @@ type senderEssentials struct {
 func chanListener(essential *senderEssentials) bool {
 	msg := <-essential.sig
 	if msg != "" {
-		log.Println("sig recv : " + msg)
+		//log.Println("sig recv : " + msg)
 		split := strings.Split(msg, "|")
 		switch split[0] {
 		case "ip":

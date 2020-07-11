@@ -27,10 +27,10 @@ deps:
 
 # クロスコンパイル
 build-win:
-	$(GOBUILD) -o $(BINARY_WIN) -v -ldflags -H=windowsgui
+	set CGO_ENABLED=1&&set GOOS=windows&& set GOARCH=amd64&& $(GOBUILD) -o $(BINARY_WIN) -v -ldflags -H=windowsgui
 
 build-mac:
-	set CGO_ENABLED=1&&set GOOS=darwin&& set GOARCH=amd64&& $(GOBUILD) -o $(BINARY_UNIX) -v -x
+	set CGO_ENABLED=1&&set GOOS=darwin&& set GOARCH=amd64&& $(GOBUILD) -o $(BINARY_NAME) -v
 
 build-linux:
 	set CGO_ENABLED=1&& set GOOS=linux&& set GOARCH=amd64&& $(GOBUILD) -o $(BINARY_UNIX) -v
