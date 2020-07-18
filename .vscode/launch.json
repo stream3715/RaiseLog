@@ -10,8 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
-            "env": {},
-            "args": ["KC"]
+            "env": {}
         }
     ]
 }
