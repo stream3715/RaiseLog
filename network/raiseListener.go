@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kechako/go-udpsample/netutil"
+	"github.com/stream3715/RaiseLog/util"
 )
 
 //RaiseListen ...Listen Clients' udp packet
@@ -31,11 +32,12 @@ func RaiseListen() {
 			break
 		}
 		go func() {
-			msg := strings.Split(string(buf[:n]), "|")
+			data := string(buf[:n])
+			msg := strings.Split(data, "|")
 			if msg[0] == "lagtest" {
-				clientTime, _ := strconv.Atoi(msg[1])
+				clientTime, _ := util.StrToInt64(msg[1], 10)
 				lag := clientTime - time.Now().UnixNano()
-				conn.WriteTo([]byte(string(lag)), addr)
+				conn.WriteTo([]byte(strconv.FormatInt(lag, 10)), addr)
 			}
 
 			log.Printf("client joined : %v", addr)
