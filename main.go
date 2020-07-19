@@ -1,5 +1,7 @@
 package main
 
+import "github.com/stream3715/RaiseLog/network"
+
 func main() {
-	go network.raiseListen()
+	network.RaiseListen()
 }

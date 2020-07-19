@@ -11,12 +11,13 @@ import (
 	"github.com/kechako/go-udpsample/netutil"
 )
 
-func raiseListen() {
+//RaiseListen ...Listen Clients' udp packet
+func RaiseListen() {
 
 	listenConfig := &net.ListenConfig{
 		Control: netutil.ListenControl,
 	}
-	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "127.0.0.1:43983")
+	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "127.0.0.1:8804")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +34,7 @@ func raiseListen() {
 			msg := strings.Split(string(buf[:n]), "|")
 			if msg[0] == "lagtest" {
 				clientTime, _ := strconv.Atoi(msg[1])
-				lag := clientTime - time.Now().Nanosecond()
+				lag := clientTime - time.Now().UnixNano()
 				conn.WriteTo([]byte(string(lag)), addr)
 			}
 
