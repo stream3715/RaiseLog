@@ -32,11 +32,12 @@ func RaiseListen() {
 			break
 		}
 		go func() {
+			nanoNow := time.Now().UnixNano()
 			data := string(buf[:n])
 			msg := strings.Split(data, "|")
 			if msg[0] == "lagtest" {
 				clientTime, _ := util.StrToInt64(msg[1], 10)
-				lag := clientTime - time.Now().UnixNano()
+				lag := clientTime - nanoNow
 				conn.WriteTo([]byte(strconv.FormatInt(lag, 10)), addr)
 			}
 
