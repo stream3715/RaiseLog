@@ -1,5 +1,7 @@
 github.com/google/uuid v1.1.2 h1:EVhdT+1Kseyi1/pUmXKaFxYsDNy9RQYkMWRH68J/W7Y=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
+github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
 github.com/kechako/go-udpsample v0.1.0 h1:qjHTVpRsayBaKq7HKnoxCpBDISuA6TyazYoZJRvOquI=
 github.com/kechako/go-udpsample v0.1.0/go.mod h1:xFdm74jhwZTXRxdY4ndBKUBvWPUMoibOaKlHD3zZO4E=
 github.com/lib/pq v1.8.0 h1:9xohqzkUwzR4Ga4ivdTcawVS89YSDVxXMa3xJX3cGzg=

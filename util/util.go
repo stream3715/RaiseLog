@@ -1,6 +1,8 @@
 package util
 
-import "strconv"
+import (
+	"strconv"
+)
 
 //StrToInt64 ...Convert string to int64
 func StrToInt64(s string, base int) (int64, error) {

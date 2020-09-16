@@ -7,19 +7,21 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/kechako/go-udpsample/netutil"
 	"github.com/stream3715/RaiseLog/util"
 )
 
-const (
-	HOST     = "ec2-34-193-117-204.compute-1.amazonaws.com"
-	DATABASE = "dfun5dmds7493v"
-	USER     = "nqwtpxgmmktepv"
-	PASSWORD = "78f9da6cfad1866a7f3026d99b280c86d6fc009ce2cb498be097546f26787ac7"
+var (
+	HOST     = os.Getenv("HOST")
+	DATABASE = os.Getenv("DATABASE")
+	USER     = os.Getenv("USER")
+	PASSWORD = os.Getenv("PASSWORD")
 )
 
 func checkError(err error) {
@@ -28,8 +30,17 @@ func checkError(err error) {
 	}
 }
 
+func envLoad() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
 //RaiseListen ...Listen Clients' udp packet
 func RaiseListen() {
+	envLoad()
+
 	u, err := uuid.NewRandom()
 	if err != nil {
 		fmt.Println(err)
