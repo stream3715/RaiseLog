@@ -17,13 +17,6 @@ import (
 	"github.com/stream3715/RaiseLog/util"
 )
 
-var (
-	HOST     = os.Getenv("HOST")
-	DATABASE = os.Getenv("DATABASE")
-	USER     = os.Getenv("USER")
-	PASSWORD = os.Getenv("PASSWORD")
-)
-
 func checkError(err error) {
 	if err != nil {
 		panic(err)
@@ -41,6 +34,12 @@ func envLoad() {
 func RaiseListen() {
 	envLoad()
 
+	var (
+		HOST     = os.Getenv("HOST")
+		DATABASE = os.Getenv("DATABASE")
+		USER     = os.Getenv("USER")
+		PASSWORD = os.Getenv("PASSWORD")
+	)
 	u, err := uuid.NewRandom()
 	if err != nil {
 		fmt.Println(err)
