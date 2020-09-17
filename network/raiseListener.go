@@ -1,6 +1,7 @@
 package network
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -60,26 +61,31 @@ func RaiseListen() {
 	listenConfig := &net.ListenConfig{
 		Control: netutil.ListenControl,
 	}
-	conn, err := listenConfig.ListenPacket(context.Background(), "udp", ":8804")
+	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "localhost:8804")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
 
-	var buf []byte
+	buf := make([]byte, 1500)
 	for {
-		_, addr, err := conn.ReadFrom(buf[:])
-		if buf == nil {
-			continue
-		}
+		n, addr, err := conn.ReadFrom(buf)
 		if err != nil {
 			log.Print(err)
 			break
+		} else if n == 0 {
+			continue
 		}
+
+		fmt.Printf("data recv, %X\n", buf)
 		go func() {
 			nanoNow := time.Now().UnixNano()
 			var recv []util.Receive
-			if err := json.Unmarshal(buf, &recv); err != nil {
+			n := bytes.IndexByte(buf, 0)
+			if err := json.Unmarshal(buf[:n], &recv); err != nil {
+				if err, ok := err.(*json.SyntaxError); ok {
+					fmt.Println(string(buf[err.Offset-15 : err.Offset+15]))
+				}
 				log.Fatal(err)
 			}
 			for _, data := range recv {
@@ -92,9 +98,10 @@ func RaiseListen() {
 					// 構造体のインスタンス化
 					recvTime, _ := util.StrToInt64(data.Payload, 10)
 
-					sqlStatement := "INSERT INTO $1 (name, quantity) VALUES ($2, $3);"
+					sqlStatement := "INSERT INTO \"" + uu + "\" VALUES (" + fmt.Sprint(recvTime) + ", '" + data.Name + "');"
 					// INSERTを実行
-					_, err = db.Exec(sqlStatement, uu, recvTime, data.Name)
+					fmt.Println(sqlStatement)
+					_, err = db.Exec(sqlStatement)
 
 					conn.WriteTo([]byte("lock"), addr)
 				}
