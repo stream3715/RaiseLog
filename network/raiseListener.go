@@ -33,7 +33,7 @@ func envLoad() {
 
 //RaiseListen ...Listen Clients' udp packet
 func RaiseListen() {
-	envLoad()
+	// envLoad()
 
 	var (
 		HOST     = os.Getenv("HOST")
