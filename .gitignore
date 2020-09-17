@@ -21,7 +21,6 @@
 # vendor/
 
 ### Go Patch ###
-/vendor/
 /Godeps/
 
 ### VisualStudioCode ###
