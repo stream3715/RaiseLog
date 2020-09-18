@@ -2,19 +2,14 @@ package network
 
 import (
 	"bytes"
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net"
-	"os"
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/joho/godotenv"
-	"github.com/kechako/go-udpsample/netutil"
 	"github.com/stream3715/RaiseLog/util"
 )
 
@@ -24,48 +19,11 @@ func checkError(err error) {
 	}
 }
 
-func envLoad() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
 //RaiseListen ...Listen Clients' udp packet
-func RaiseListen() {
-	envLoad()
-
-	var (
-		HOST     = os.Getenv("DB_HOST")
-		DATABASE = os.Getenv("DB_DATABASE")
-		USER     = os.Getenv("DB_USER")
-		PASSWORD = os.Getenv("DB_PASSWORD")
-	)
-	u, err := uuid.NewRandom()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	uu := u.String()
-	fmt.Println(uu)
-
-	var connectionString string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", HOST, USER, PASSWORD, DATABASE)
-	db, err := sql.Open("postgres", connectionString)
-	checkError(err)
-	defer db.Exec("DROP TABLE \"" + uu + "\"")
-	defer db.Close()
+func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 	createTableString := "CREATE TABLE \"" + uu + "\"(time bigint PRIMARY KEY, name varchar(32));"
-	_, err = db.Exec(createTableString)
+	_, err := db.Exec(createTableString)
 	checkError(err)
-
-	listenConfig := &net.ListenConfig{
-		Control: netutil.ListenControl,
-	}
-	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "0.0.0.0:8804")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
 
 	buf := make([]byte, 1500)
 	for {
