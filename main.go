@@ -34,9 +34,6 @@ func main() {
 	}
 	defer conn.Close()
 
-	//DB接続の取得
-	db := defineDbConnection()
-
 	// UUID生成
 	uu, err := genUUID()
 	if err != nil {
@@ -45,15 +42,20 @@ func main() {
 	}
 	fmt.Println(uu)
 
+	//DB接続の取得
+	db := defineDbConnection()
+	defer db.Exec("DROP TABLE IF EXISTS \"" + uu + "\"")
+	defer db.Close()
+
 	// 実行
 	go network.RaiseListen(uu, conn, db)
 
 	//以降SIGINT受け取り後処理
 	<-quit
 	fmt.Println("SIGINT")
-	conn.Close()
-	db.Exec("DROP TABLE IF EXISTS \"" + uu + "\"")
-	db.Close()
+	defer conn.Close()
+	defer db.Exec("DROP TABLE IF EXISTS \"" + uu + "\"")
+	defer db.Close()
 
 }
 
