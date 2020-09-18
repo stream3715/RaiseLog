@@ -32,7 +32,7 @@ jobs:
       - run:
           name: SSH 経由のデプロイ
           command:
-            ssh $SSH_USER@$SSH_HOST "cd ~/go/src/github.com/stream3715/RaiseLog ; git pull && go get -v -t -u && go run ./main.go"
+            ssh $SSH_USER@$SSH_HOST "cd ~/go/src/github.com/stream3715/RaiseLog ; git pull && go get -v -t -u && go build"
 
 workflows:
   version: 2
