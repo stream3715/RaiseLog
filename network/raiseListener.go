@@ -25,8 +25,8 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 	_, err := db.Exec(createTableString)
 	checkError(err)
 
-	buf := make([]byte, 1500)
 	for {
+		buf := make([]byte, 1500)
 		n, addr, err := conn.ReadFrom(buf)
 		if err != nil {
 			log.Print(err)
@@ -35,9 +35,7 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 			continue
 		}
 
-		fmt.Printf("data recv, %X\n", buf)
 		go func() {
-			nanoNow := time.Now().UnixNano()
 			var recv []util.Receive
 			n := bytes.IndexByte(buf, 0)
 			if err := json.Unmarshal(buf[:n], &recv); err != nil {
@@ -47,17 +45,18 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 				log.Fatal(err)
 			}
 			for _, data := range recv {
+				nanoNow := time.Now().UnixNano()
 				if data.Command == 0 {
 					clientTime, _ := util.StrToInt64(data.Payload, 10)
 					lag := nanoNow - clientTime
 					conn.WriteTo([]byte(strconv.FormatInt(lag, 10)), addr)
-					log.Printf("%v client joined : %v with time: %v", nanoNow, addr, clientTime)
 				} else if data.Command == 1 {
 					// 構造体のインスタンス化
-					recvTime, _ := util.StrToInt64(data.Payload, 10)
-
+					lag, _ := util.StrToInt64(data.Payload, 10)
+					recvTime := nanoNow + lag
 					sqlStatement := "INSERT INTO \"" + uu + "\" VALUES (" + fmt.Sprint(recvTime) + ", '" + data.Name + "');"
 					// INSERTを実行
+					log.Printf("%v client raised : %v with time: %v", nanoNow, addr, recvTime)
 					fmt.Println(sqlStatement)
 					_, err = db.Exec(sqlStatement)
 
