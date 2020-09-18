@@ -25,6 +25,7 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 	_, err := db.Exec(createTableString)
 	checkError(err)
 	reset := false
+	release := false
 
 	for {
 		buf := make([]byte, 1500)
@@ -50,6 +51,8 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 				if data.Command == 0 {
 					if reset == true {
 						conn.WriteTo([]byte("0"), addr)
+					} else if release == true {
+						conn.WriteTo([]byte("1"), addr)
 					}
 					clientTime, _ := util.StrToInt64(data.Payload, 10)
 					lag := nanoNow - clientTime
@@ -67,12 +70,14 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					conn.WriteTo([]byte("lock"), addr)
 				} else if data.Command == 2 {
 					reset = true
+					release = false
 					sqlStatement := "TRUNCATE \"" + uu + "\";"
 					// INSERTを実行
 					fmt.Println(sqlStatement)
 					_, err = db.Exec(sqlStatement)
 				} else if data.Command == 3 {
 					reset = false
+					release = true
 				}
 			}
 		}()
