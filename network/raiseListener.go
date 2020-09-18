@@ -49,14 +49,15 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 			for _, data := range recv {
 				nanoNow := time.Now().UnixNano()
 				if data.Command == 0 {
+					controlBit := ""
 					if reset == true {
-						conn.WriteTo([]byte("0"), addr)
+						controlBit = "0"
 					} else if release == true {
-						conn.WriteTo([]byte("1"), addr)
+						controlBit = "1"
 					}
 					clientTime, _ := util.StrToInt64(data.Payload, 10)
 					lag := nanoNow - clientTime
-					conn.WriteTo([]byte(strconv.FormatInt(lag, 10)), addr)
+					conn.WriteTo([]byte(controlBit+","+strconv.FormatInt(lag, 10)), addr)
 				} else if data.Command == 1 {
 					// 構造体のインスタンス化
 					lag, _ := util.StrToInt64(data.Payload, 10)
@@ -68,16 +69,16 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					_, err = db.Exec(sqlStatement)
 
 					conn.WriteTo([]byte("lock"), addr)
-				} else if data.Command == 2 {
+				} else if data.Command == 3 {
 					reset = true
 					release = false
 					sqlStatement := "TRUNCATE \"" + uu + "\";"
 					// INSERTを実行
 					fmt.Println(sqlStatement)
 					_, err = db.Exec(sqlStatement)
-				} else if data.Command == 3 {
+				} else if data.Command == 4 {
 					reset = false
-					release = true
+					release = false
 				}
 			}
 		}()
