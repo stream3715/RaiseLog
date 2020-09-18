@@ -53,9 +53,9 @@ func main() {
 	//以降SIGINT受け取り後処理
 	<-quit
 	fmt.Println("SIGINT")
-	defer conn.Close()
-	defer db.Exec("DROP TABLE IF EXISTS \"" + uu + "\"")
-	defer db.Close()
+	conn.Close()
+	db.Exec("DROP TABLE IF EXISTS \"" + uu + "\"")
+	db.Close()
 
 }
 
