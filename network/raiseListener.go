@@ -51,9 +51,9 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 				if data.Command == 0 {
 					controlBit := ""
 					if reset == true {
-						controlBit = "0"
+						controlBit = "8"
 					} else if release == true {
-						controlBit = "1"
+						controlBit = "9"
 					}
 					clientTime, _ := util.StrToInt64(data.Payload, 10)
 					lag := nanoNow - clientTime
@@ -74,11 +74,14 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					release = false
 					sqlStatement := "TRUNCATE \"" + uu + "\";"
 					// INSERTを実行
-					fmt.Println(sqlStatement)
+					fmt.Println("Wait")
 					_, err = db.Exec(sqlStatement)
 				} else if data.Command == 4 {
+					fmt.Println("Ready")
 					reset = false
 					release = true
+					time.Sleep(time.Second)
+					release = false
 				}
 			}
 		}()
