@@ -71,6 +71,7 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					// INSERTを実行
 					fmt.Println(sqlStatement)
 					_, err = db.Exec(sqlStatement)
+				} else if data.Command == 3 {
 					reset = false
 				}
 			}
