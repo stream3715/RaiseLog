@@ -33,13 +33,13 @@ func envLoad() {
 
 //RaiseListen ...Listen Clients' udp packet
 func RaiseListen() {
-	// envLoad()
+	envLoad()
 
 	var (
-		HOST     = os.Getenv("HOST")
-		DATABASE = os.Getenv("DATABASE")
-		USER     = os.Getenv("USER")
-		PASSWORD = os.Getenv("PASSWORD")
+		HOST     = os.Getenv("DB_HOST")
+		DATABASE = os.Getenv("DB_DATABASE")
+		USER     = os.Getenv("DB_USER")
+		PASSWORD = os.Getenv("DB_PASSWORD")
 	)
 	u, err := uuid.NewRandom()
 	if err != nil {
