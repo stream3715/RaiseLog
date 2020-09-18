@@ -28,7 +28,7 @@ func main() {
 	listenConfig := &net.ListenConfig{
 		Control: netutil.ListenControl,
 	}
-	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "localhost:8804")
+	conn, err := listenConfig.ListenPacket(context.Background(), "udp", "0.0.0.0:8804")
 	if err != nil {
 		log.Fatal(err)
 	}
