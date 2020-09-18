@@ -24,6 +24,7 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 	createTableString := "CREATE TABLE \"" + uu + "\"(time bigint PRIMARY KEY, name varchar(32));"
 	_, err := db.Exec(createTableString)
 	checkError(err)
+	reset := false
 
 	for {
 		buf := make([]byte, 1500)
@@ -47,6 +48,9 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 			for _, data := range recv {
 				nanoNow := time.Now().UnixNano()
 				if data.Command == 0 {
+					if reset == true {
+						conn.WriteTo([]byte("0"), addr)
+					}
 					clientTime, _ := util.StrToInt64(data.Payload, 10)
 					lag := nanoNow - clientTime
 					conn.WriteTo([]byte(strconv.FormatInt(lag, 10)), addr)
@@ -61,6 +65,13 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					_, err = db.Exec(sqlStatement)
 
 					conn.WriteTo([]byte("lock"), addr)
+				} else if data.Command == 2 {
+					reset = true
+					sqlStatement := "TRUNCATE \"" + uu + "\";"
+					// INSERTを実行
+					fmt.Println(sqlStatement)
+					_, err = db.Exec(sqlStatement)
+
 				}
 			}
 		}()
