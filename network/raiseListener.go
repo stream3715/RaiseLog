@@ -78,7 +78,7 @@ func RaiseListen(uu string, conn net.PacketConn, db *sql.DB) {
 					_, err = db.Exec(sqlStatement)
 				} else if data.Command == 4 {
 					reset = false
-					release = false
+					release = true
 				}
 			}
 		}()
